@@ -125,11 +125,21 @@ class StaticURLTests(TestCase):
         response = self.guest_client.get('/very_bad_page/')
         self.assertEqual(response.status_code, 404)
 
-    def test_new_post_alpha(self):
+    def test_comment_redirect(self):
         """Страница создания комментария перенаправит неавторизованного
         пользователя на страницу логина"""
         login = reverse('login')
         my_target_url = f'/{self.post.author.username}/{self.post.id}/comment'
+        response = self.guest_client.get(my_target_url)
+        self.assertRedirects(
+            response, f'{login}?next={my_target_url}')
+
+    # Добавил проверку на редирект
+    def test_follow_redirect(self):
+        """Страница ленты подписок перенаправит неавторизованного
+        пользователя на страницу логина"""
+        login = reverse('login')
+        my_target_url = '/follow/'
         response = self.guest_client.get(my_target_url)
         self.assertRedirects(
             response, f'{login}?next={my_target_url}')

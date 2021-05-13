@@ -72,7 +72,7 @@ class NewPostFormTests(TestCase):
         self.assertTrue(Post.objects.filter(
                         group=form_data['group'],
                         text=form_data['text'],
-                        image='posts/small.gif'
+                        image=f'posts/{uploaded.name}'
                         ).exists())
 
     def test_post_edit(self):

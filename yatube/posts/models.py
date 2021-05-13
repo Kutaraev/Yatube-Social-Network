@@ -22,7 +22,7 @@ class Post(models.Model):
     group = models.ForeignKey(Group, on_delete=models.SET_NULL,
                               blank=True, null=True,
                               related_name="groups")
-    image = models.ImageField(upload_to='posts/',
+    image = models.ImageField(upload_to="posts/",
                               blank=True, null=True)
 
     def __str__(self):

@@ -12,7 +12,7 @@ from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from posts.forms import PostForm
-from ..models import Group, Post, Follow
+from ..models import Group, Post, Follow, Comment
 
 User = get_user_model()
 
@@ -72,7 +72,9 @@ class ViewsPagesTests(TestCase):
             'index.html': reverse('index'),
             'group.html': reverse(
                 'group', kwargs={'slug': self.post.group.slug}),
-            'new_post.html': reverse('new_post')
+            'new_post.html': reverse('new_post'),
+            # Добавил проверку шаблона follow.html
+            'follow.html': reverse('follow_index')
         }
 
         for template, reverse_name in templates_pages_names.items():
@@ -89,12 +91,11 @@ class ViewsPagesTests(TestCase):
         post_pub_date_0 = first_object.pub_date.date()
         post_author_0 = first_object.author.username
         post_group_0 = first_object.group.title
-        post_image_0 = first_object.image
         self.assertEqual(post_text_0, self.post.text)
         self.assertEqual(post_pub_date_0, dt.date.today())
         self.assertEqual(post_group_0, self.post.group.title)
         self.assertEqual(post_author_0, self.post.author.username)
-        self.assertEqual(post_image_0, self.post.image)
+        self.assertContains(response, '<img')
 
     def test_group_correct_context(self):
         """Шаблон group сформирован с правильным контекстом."""
@@ -104,11 +105,10 @@ class ViewsPagesTests(TestCase):
         group_title_0 = first_object.group.title
         group_slug_0 = first_object.group.slug
         group_description_0 = first_object.group.description
-        group_image_0 = first_object.image
         self.assertEqual(group_title_0, self.post.group.title)
         self.assertEqual(group_slug_0, self.post.group.slug)
         self.assertEqual(group_description_0, self.post.group.description)
-        self.assertEqual(group_image_0, self.post.image)
+        self.assertContains(response, '<img')
 
     def test_post_only_in_one_group(self):
         """Созданный пост не появился на странице пустой группы"""
@@ -184,15 +184,14 @@ class ViewsPagesTests(TestCase):
         post_text_0 = first_object.text
         post_author_0 = first_object.author.username
         post_group_0 = first_object.group.title
-        post_image_0 = first_object.image
         self.assertEqual(post_text_0, self.post.text)
         self.assertEqual(post_author_0, self.post.author.username)
         self.assertEqual(post_group_0, self.post.group.title)
-        self.assertEqual(post_image_0, self.post.image)
+        self.assertContains(response, '<img')
 
     def test_cache_testing(self):
         """Проверка работы кэша"""
-        template_key = make_template_fragment_key('index_page')
+        template_key = make_template_fragment_key('index_page', [1])
         cache_data = cache.get(template_key)
         self.assertIsNotNone(cache_data)
 
@@ -248,16 +247,6 @@ class FollowPagesTests(TestCase):
         self.authorized_client_3 = Client()
         self.authorized_client_3.force_login(self.user_3)
 
-    def test_single_post_exist_in_followers(self):
-        """Новый пост появялеется в ленте подписчика"""
-        Follow.objects.create(user=self.user_2, author=self.user_1)
-        # Лента юзера 2 пустая
-        response_emty_follow = self.authorized_client_2.get(
-            reverse('follow_index'))
-        empty_follow_obj = list(
-            response_emty_follow.context['page'].object_list)
-        self.assertEqual(empty_follow_obj, [])
-        # Юзер 1 создает пост, а затем смотрим, есть ли он в ленте юзера 2
         Post.objects.create(
             text='Текст сообщения',
             pub_date=dt.date.today(),
@@ -268,13 +257,83 @@ class FollowPagesTests(TestCase):
                 description='Тестовое описание группы',
             )
         )
+
+# скопировал из test_models.py
+    def test_follow_unfollow(self):
+        """Авторизованный пользователь может подписываться на других пользователей
+        и удалять их из подписок"""
+        follow_before = Follow.objects.filter(user=self.user_1).count()
+        self.assertEqual(follow_before, 0)
+        Follow.objects.create(user=self.user_1, author=self.user_2)
+        follow_after = Follow.objects.filter(user=self.user_1).count()
+        self.assertEqual(follow_after, 1)
+        Follow.objects.filter(user=self.user_1, author=self.user_2).delete()
+        unfollow = Follow.objects.filter(user=self.user_1).count()
+        self.assertEqual(unfollow, 0)
+
+    def test_single_post_exist_in_followers(self):
+        """Новый пост появялеется в ленте подписчика"""
+        # Лента юзера 2 пустая
+        response_emty_follow = self.authorized_client_2.get(
+            reverse('follow_index'))
+        empty_follow_obj = list(
+            response_emty_follow.context['page'].object_list)
+        self.assertEqual(empty_follow_obj, [])
+        # Юзер 2 подписывается на юзера 1
+        Follow.objects.create(user=self.user_2, author=self.user_1)
         response_follow_with_post = self.authorized_client_2.get(
             reverse('follow_index'))
         follow_obj_with_post = response_follow_with_post.context['page']
+        # У юзера 2 в ленте появляется пост юзера 1
         self.assertEqual(len(follow_obj_with_post.object_list), 1)
-        # Лента юзера 3 пустая после создания поста
+
+    def post_not_in_uhfollower_page(self):
+        """Созданный пост не появляется в ленте неподписанного
+        пользователя"""
+        # Лента юзера 3 пустая после создания поста юзера 1
         response_emty_follow_3 = self.authorized_client_3.get(
             reverse('follow_index'))
         empty_follow_obj_3 = list(
             response_emty_follow_3.context['page'].object_list)
         self.assertEqual(empty_follow_obj_3, [])
+
+
+# скопировал из test_models.py
+class CommentModelTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        cls.post = Post.objects.create(
+            text='Текст сообщения',
+            pub_date=dt.date.today(),
+            author=User.objects.create_user(username='user_1', ),
+            group=Group.objects.create(
+                title='Тестовое название группы',
+                slug='test-slug',
+                description='Тестовое описание группы',
+            )
+        )
+
+        cls.user_2 = User.objects.create(username='user_2')
+
+    def setUp(self):
+        self.authorized_client_1 = Client()
+        self.authorized_client_1.force_login(self.post.author)
+
+        self.authorized_client_2 = Client()
+        self.authorized_client_2.force_login(self.user_2)
+
+        self.guest_client = Client()
+
+    def test_create_comments(self):
+        """Авторизированный пользователь может
+        оставлять комментарии"""
+        comments_before = Comment.objects.filter(author=self.user_2).count()
+        self.assertEqual(comments_before, 0)
+        Comment.objects.create(
+            post=self.post,
+            author=self.user_2,
+            text='Комментарий')
+        comments_after = Comment.objects.filter(author=self.user_2).count()
+        self.assertEqual(comments_after, 1)

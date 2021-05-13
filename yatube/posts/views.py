@@ -46,11 +46,17 @@ def profile(request, username):
     paginator = Paginator(post_list, 10)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
+    subscribe = False
+    if request.user.is_authenticated:
+        subscribe = Follow.objects.filter(
+            user=request.user,
+            author__username=username).exists()
     return render(
         request, "profile.html", {
             'page': page,
             'username': username,
-            'author': author})
+            'author': author,
+            'subscribe': subscribe})
 
 
 def post_view(request, username, post_id):
@@ -122,16 +128,11 @@ def add_comment(request, username, post_id):
 
 @login_required
 def follow_index(request):
-    followed_objects = Follow.objects.filter(user=request.user)
-    followed_authors = []
-    for item in followed_objects:
-        followed_authors.append(item.author)
-    followed_posts = Post.objects.filter(author__in=followed_authors)
+    followed_posts = Post.objects.filter(author__following__user=request.user)
     paginator = Paginator(followed_posts, 10)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
-    return render(request, 'follow.html', {'page': page,
-                                           'is_post_view': False})
+    return render(request, 'follow.html', {'page': page})
 
 
 @login_required
@@ -139,12 +140,13 @@ def profile_follow(request, username):
     user = User.objects.get(username=username)
     active_follow = Follow.objects.filter(user=request.user, author=user)
     if request.user != user and not active_follow:
-        Follow.objects.create(user=request.user, author=user)
+        Follow.objects.get_or_create(user=request.user, author=user)
     return redirect('profile', username)
 
 
 @login_required
 def profile_unfollow(request, username):
-    user = User.objects.get(username=username)
-    Follow.objects.filter(user=request.user, author=user).delete()
+    Follow.objects.filter(
+        user=request.user,
+        author__username=username).delete()
     return redirect('profile', username)
