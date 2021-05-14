@@ -3,33 +3,24 @@
 
 {% block content %}
 
-{% load cache %} 
-{% cache 20 index_page page.number %} 
+  {% load cache %} 
+  {% cache 20 index_page page.number %} 
 
-
-<div class="container">
-
+  <div class="container">
     {% include "menu.html" with index=True %}
+    <h1>Последние обновления на сайте</h1>
+  
+    {% for post in page %}
+      {% include "post_item.html" with post=post %}
+    {% endfor %}
+         
+    {% if page.has_other_pages %}
+      {% include "paginator.html" with items=page paginator=paginator %}
+    {% endif %}      
+  </div>
 
-        <h1>Последние обновления на сайте</h1>
-
-
-        
-        {% for post in page %}
-
-            {% include "post_item.html" with post=post %}
-        {% endfor %}
-    
-        
-
-        {% if page.has_other_pages %}
-            {% include "paginator.html" with items=page paginator=paginator %}
-        {% endif %}
-        
-    </div>
-
-{% endcache %}    
-    
+  {% endcache %} 
+   
 {% endblock %}
 
 

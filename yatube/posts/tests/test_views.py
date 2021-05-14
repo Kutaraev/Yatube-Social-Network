@@ -11,7 +11,7 @@ from django.test import Client, TestCase
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from posts.forms import PostForm
+from posts.forms import PostForm, CommentForm
 from ..models import Group, Post, Follow, Comment
 
 User = get_user_model()
@@ -258,18 +258,29 @@ class FollowPagesTests(TestCase):
             )
         )
 
-# скопировал из test_models.py
-    def test_follow_unfollow(self):
-        """Авторизованный пользователь может подписываться на других пользователей
-        и удалять их из подписок"""
+    def test_follow(self):
+        """Авторизованный пользователь может подписываться на авторов"""
+        # Юзер 1 ни на кого не подписан
         follow_before = Follow.objects.filter(user=self.user_1).count()
         self.assertEqual(follow_before, 0)
-        Follow.objects.create(user=self.user_1, author=self.user_2)
+        # Юзер 1 подписывается на юзера 2 через вьюху
+        self.authorized_client_1.get(reverse(
+            'profile_follow', kwargs={'username': self.user_2.username}))
         follow_after = Follow.objects.filter(user=self.user_1).count()
         self.assertEqual(follow_after, 1)
-        Follow.objects.filter(user=self.user_1, author=self.user_2).delete()
-        unfollow = Follow.objects.filter(user=self.user_1).count()
-        self.assertEqual(unfollow, 0)
+
+    def test_unfollow(self):
+        """Авторизованный пользователь может отписываться от авторов"""
+        # Создадими подписку программно, чтобы было от чего отписываться
+        Follow.objects.create(user=self.user_1, author=self.user_3)
+        # Посчитаем их
+        follow_counts = Follow.objects.filter(user=self.user_1).count()
+        # Отпишемся через вью
+        self.authorized_client_1.get(reverse(
+            'profile_unfollow', kwargs={'username': self.user_3.username}))
+        # Посчитаем подписки и сравним их
+        follow_after = Follow.objects.filter(user=self.user_1).count()
+        self.assertEqual(follow_after, follow_counts - 1)
 
     def test_single_post_exist_in_followers(self):
         """Новый пост появялеется в ленте подписчика"""
@@ -330,10 +341,27 @@ class CommentModelTest(TestCase):
         """Авторизированный пользователь может
         оставлять комментарии"""
         comments_before = Comment.objects.filter(author=self.user_2).count()
-        self.assertEqual(comments_before, 0)
-        Comment.objects.create(
-            post=self.post,
-            author=self.user_2,
-            text='Комментарий')
+        form_data = {
+            'post': self.post,
+            'author': self.user_2,
+            'text': 'Тестовый комментарий'
+        }
+        response = self.authorized_client_2.post(
+            reverse('add_comment', kwargs={
+                'username': self.post.author.username,
+                'post_id': self.post.id}),
+            data=form_data,
+            follow=True
+        )
         comments_after = Comment.objects.filter(author=self.user_2).count()
-        self.assertEqual(comments_after, 1)
+        # Количество комментариев юзера 2 стало больше ровно на одну штуку
+        self.assertEqual(comments_after, comments_before + 1)
+        # Существует созданный пост с теми данными,
+        # которые мы передавали в POST
+        self.assertTrue(Comment.objects.filter(
+                        post=form_data['post'],
+                        author=form_data['author'],
+                        text=form_data['text']
+                        ).exists())
+        self.assertIsInstance(response.context['form'], CommentForm)
+        self.assertIsInstance(response.context['post'], Post)

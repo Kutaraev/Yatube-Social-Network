@@ -123,7 +123,7 @@ class StaticURLTests(TestCase):
     def test_404_url_exists(self):
         """ Сервер возвращает 404 при неизвестной сранице"""
         response = self.guest_client.get('/very_bad_page/')
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
     def test_comment_redirect(self):
         """Страница создания комментария перенаправит неавторизованного
