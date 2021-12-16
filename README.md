@@ -5,11 +5,11 @@
 Социальная сеть Yatube
 
 ## Содержание
-- [Описание](#Описание)
+- [Описание проекта](#Описание)
 - [Технологии](#Технологии)
 - [Установка](#Установка)
-- [Примеры](#Примеры_страниц_приложения)
-- [Планы](#Планы_по_развитию_проекта)
+- [Примеры страниц приложения](#Примеры)
+- [Планы по развитию проекта](#Планы)
 - [Контакты](#Контакты)
 
 ## <a name="Описание">Описание</a>
@@ -27,7 +27,7 @@
 - [Git](https://github.com/)
 - [Visual Studio Code](https://code.visualstudio.com/Download)
 
-## Установка
+## <a name="Установка">Установка</a>
 1. Клонировать репозиторий
 ```
 git clone https://github.com/Kutaraev/Yatube-Social-Network.git
@@ -45,7 +45,7 @@ source venv/scripts/activate
 pip install -r requirements.txt
 ```
 
-## Примеры страниц приложения
+## <a name="Примеры">Примеры страниц приложения</a>
 В данном разделе находятся основные структурные элементы, из которых состоит данный проект.
 ### Страница регистрации
 ![регистрация](https://lh3.googleusercontent.com/wEAU6LgmMUJFfUEUcCQ3O7fsqslV2acBOGs0HS7f6LkHzAwAcZTk0_pC3PvBhhFunJVBp4TYHbeN2sFWaQ8WPPsYuDGCVz7NTdEpPIruoC5cB1LlllPksQQU-GuqtrXOGxRaviBDNaCAX8lio5bq6p6nZdt23vNxT5svH1z7a3u9rC9xoziN1IF1n1IBh9Oaxv4MHPQga3xj8L3jDtSRFhmpnn6DafgIzvGHVhqLQ1_BVtYziPiFBpk_6_RobxkoVqp9mMIPrK6qGhjCXY9ZwFM7-9nDkDjE0u89CKCp6AMFcDnZh9DsCORXtFbMMINS6A30z2cI76tHHQn8-QMi1CKSPpVwTrbGn_3fS5dQmREQFnZq2PHn2QBPsfXV4VGyzYAzSenqRnVU9er_W3cOKmLyeaMD8qBOj8-uO1zwUXuEDWxdQpiZE-Q3CuTOQvNkB4KMitTHG8SS1GFv7zLl7pDt_LJa8ARYdlkoDbrgIDorRJ2na5mzp10TDY3Ao0bSz7oCE8DfEGeEoXBJza3JaTmB716hv_6N0-OPVri7l_FMH9E8Ov06hOYyUw_QfrYETob1hMA8hisWrZEJhCONqgOhXtdFP8W72WmDr6I_5E2aE2RP6t7Da1PBpbznTNM6W4wLdpEOhej6X9C_hN7DGTE3u9F_lEDVv8EI_Trfuqan1xC56TJVfji2UGw-c_-dKPJWUIbct0qiCFM4kd0gtIan=w694-h791-no?authuser=0)
@@ -57,13 +57,13 @@ pip install -r requirements.txt
 ![пользователь](https://lh3.googleusercontent.com/hBCSxYu1iSRNClYKQt8v9rjn-KtXUPn_3zBVEGTKJvDf8mrSfxCxaVTzBTerhdTur6DIdXmnyqKAajtjR8waCURhD-InrvTa8vyNI8mselEDEMGTDY65wacBvBySSByEO7j_FICjpsACNc8VD-89O3y3dcg-nnYxt5lQo84NkffVa-1D_o3tD4Ni0AjyFA6BfLIlivq6SPHCm8n4OBQ4rTnlgo2Cqrv0KWo7jkE5sDd5a7WUfK_BClkilbTGlcvP6Y0j8vCBAQ-9pDXF3kYVy0at-0mFDwuB_RX8qCfW9F6z_uWPC9JnKOew5PHtCf7_cBNaXx-bFD5vKnGKTw0oTAI2hvB6bo-Qe8V2GjgcuhcC52_m7IH7l-pFSq9fsEb80gZD3zqVl9ymozAAvn3J3NBcvE1B8gu7LlCRa5fGZJvYrgkaaxVfSPK0GVaEWu5YyzFm8hTHYhiitDgh8iVQpr8iSK0oNTA4GKA8ZlMxwR1LvSqnibsQ38LDipy5HV4iKdcuFrNSC_kLgiox64uHAggJMEwWqj0iwugMNyhPvLZjytEcPBcniFJc-RyeyPBMs4dvLTb83Zt6_x_i-xHn5AJ7GAzCxWRqWrjcIYZzqfp1cKIuvWVdAtT-Giu_cGVh2tEv-mPba3Erzd0aMGQaokeB0G3EEg99olvgvhvjsE8E1vLyTbz9aCkPzHzU5FAPZ_Az1U6uSGobxdEDaL9M7xoP=w1150-h732-no?authuser=0)
 ### Блок комментариев
 ![комментарии](https://lh3.googleusercontent.com/XlfA61zRG5wwkIMPe3abnBHzmYYJcjDLaSSUrfq9iIyFSxzPk8z-wzQeL-HC_n9Tm7tSiZkS9b88Ul_-yQj1DmVSLKvVdZQCgiEzLoPOvkutx1aluJI9EWy5o0N9F2uVcp50t5iLrckMSwDVKniF3VB2o7vf-oDaUA2p1firCuAd9wRJFvd42vekjCUUXdvVNJOZBdnulsyAcZPHxVo4D5HZt5x4sG1nDwg6JmU0FvmeoLIAWKFli_VoRJqazlKE119SZj3uS-5bpbtCGMGVBYgr9geUPMqMcwTw9pjB2PYwgskS24buOxrxFYh8JgXcNG2hqryD2mOOMv7dCPGCk-zliFwInoK6DLUJ0rZJx3QZnkWDE5qWSjICBQ4bzKdONj1yR4UVTj_ZyKKMGLnvDuJz51D7Fl-hqrGCQNbzOb81KrIFIjiAfCbt5pBUUwwqP34dI5e6wTdHmpjql5CGqbYnyyzY6nq0SrqGMHK4M-sJySPvSG0ejEJidSj3ugWIs5b7NJBXnewamYU1PtFX7RK9n-w4NiuFaFoyP1V44JVrE34dS3W250iAmY_5VYAdDOZQe6DeBElFiTfA8cOunq6c0OGlURm7PQjXHHBAxrjR4IhBa-oe4g2ptiHPx7qaj0Cp-f8k_kwbw8OBRQ-OE_sw8g5uRmMQ4ifkj74R-boAr0AEd0w05gbIkqSrzPZrb8x-_vw63rnWh0y2BiunG2Wd=w518-h857-no?authuser=0)
-## Планы по развитию проекта
+## <a name="Планы">Планы по развитию проекта</a>
 Несмотря на то, что проект полностью готов к деплою на сервер и собственно запуску, он содержит лишь базовые элементы социальной сети: посты и комментарии.Функционал можно расширить следующим образом:
 - Создание более детальной и информативной страницы пользователя, в которой он может оставить свои контактные данные и информацию о себе;
 - Создание системы рейтингов постов и комментариев;
 - Добавление на главную страницу строки поиска и разработка системы тегов, при помощи которой можно найти тематические посты.
 - Создание новостной ленты, контент которой создают модераторы.
 
-## Контакты
+## <a name="Контакты">Контакты</a>
 Артем Кутараев – [@artem_kutaraev](https://t.me/artem_kutaraev) – artem.kutaraev@gmail.com  
 Ссылка на проект – [https://github.com/Kutaraev/Yatube-Social-Network.git](https://github.com/Kutaraev/Yatube-Social-Network.git)
